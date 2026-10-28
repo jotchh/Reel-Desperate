@@ -1,5 +1,13 @@
 using UnityEngine;
 
+public enum UpgradeRarity
+{
+    Common,
+    Uncommon,
+    Rare,
+    Legendary
+}
+
 /*
 To create a new upgrade in unity:
 Assets -> Create -> Fishing -> Upgrade
