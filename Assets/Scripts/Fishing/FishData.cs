@@ -39,4 +39,8 @@ public class FishData : ScriptableObject
 
     [Tooltip("Progress lost per second while the fish is outside the sweet spot. (higher value = harder)")]
     public float progressDrainRate = 0.2f;
+
+    [Header("Economy")]
+    [Tooltip("Sell price of fish")]
+    public float sellPrice = 10f;
 }
