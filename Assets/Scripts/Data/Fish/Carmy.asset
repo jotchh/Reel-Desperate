@@ -12,11 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 70b3421a6ad394bec8e49d10b51da95b, type: 3}
   m_Name: Carmy
   m_EditorClassIdentifier: Assembly-CSharp::FishData
-  fishName: Fish
-  sprite: {fileID: 0}
-  rarity: 0
-  biteChance: 0.2
-  sweetSpotSize: 0.3
+  fishName: Carmy
+  sprite: {fileID: 2937899505246914955, guid: 0bcbae5c357886d47b9829540b56e157, type: 3}
+  rarity: 3
+  biteChance: 0.26
+  sweetSpotSize: 0.167
   fishSpeed: 1.5
-  erraticness: 0.3
+  erraticness: 0.368
   progressDrainRate: 0.2
