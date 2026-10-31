@@ -20,7 +20,7 @@ MonoBehaviour:
   fishSpeed: 1.5
   erraticness: 0.3
   progressDrainRate: 0.2
-  sellPrice: 10
+  sellPrice: 3
   appearances:
   - fishName: Pike
     sprite: {fileID: -6511701878470325585, guid: 98f1848e954c29342a06f4f9d5e6990b, type: 3}

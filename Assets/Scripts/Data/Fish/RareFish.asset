@@ -20,7 +20,7 @@ MonoBehaviour:
   fishSpeed: 1.5
   erraticness: 0.3
   progressDrainRate: 0.2
-  sellPrice: 10
+  sellPrice: 7
   appearances:
   - fishName: Bull Shark
     sprite: {fileID: 8930436290927748540, guid: 2dc1b977b6117824caba152a38a9511c, type: 3}
