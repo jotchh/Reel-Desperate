@@ -8318,6 +8318,10 @@ MonoBehaviour:
   rodRight: {fileID: 491834175}
   fishPool:
   - {fileID: 11400000, guid: 6e24fd93958c74a719dff05c0a286a5d, type: 2}
+  - {fileID: 11400000, guid: 20774267f2a1a5044978d52c67a2cfe9, type: 2}
+  - {fileID: 11400000, guid: d40af38d377736045b03af840918b409, type: 2}
+  - {fileID: 11400000, guid: dc12d948af69db04f8bb7ab4ae82fd56, type: 2}
+  - {fileID: 11400000, guid: 09e32db4a6d6ccc4ba2d7e09d4d68d0d, type: 2}
   minWaitTime: 1.5
   biteCheckInterval: 1
   reactionWindow: 0.8
@@ -8380,12 +8384,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0f80207916db0cd43b48186e0f26b804, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Inventory
-  caughtFish:
-  - {fileID: 11400000, guid: 6e24fd93958c74a719dff05c0a286a5d, type: 2}
-  - {fileID: 11400000, guid: 6e24fd93958c74a719dff05c0a286a5d, type: 2}
-  - {fileID: 11400000, guid: 6e24fd93958c74a719dff05c0a286a5d, type: 2}
-  - {fileID: 11400000, guid: 6e24fd93958c74a719dff05c0a286a5d, type: 2}
-  - {fileID: 11400000, guid: 6e24fd93958c74a719dff05c0a286a5d, type: 2}
+  caughtFish: []
   testFish: {fileID: 11400000, guid: 6e24fd93958c74a719dff05c0a286a5d, type: 2}
 --- !u!1 &1155527397
 GameObject:

@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 70b3421a6ad394bec8e49d10b51da95b, type: 3}
+  m_Name: CommonFish
+  m_EditorClassIdentifier: Assembly-CSharp::FishData
+  fishName: Common Fish
+  sprite: {fileID: 7968812502953378578, guid: 3245dd54c84e37749825f70aa50e504a, type: 3}
+  rarity: 0
+  biteChance: 0.631
+  sweetSpotSize: 0.3
+  fishSpeed: 1.5
+  erraticness: 0.3
+  progressDrainRate: 0.2
+  sellPrice: 10
+  appearances:
+  - fishName: Carp
+    sprite: {fileID: 7968812502953378578, guid: 3245dd54c84e37749825f70aa50e504a, type: 3}
+  - fishName: Blue Gill
+    sprite: {fileID: 6838431071280773646, guid: 5b0f7b92ac76eed4892533a23f68e933, type: 3}

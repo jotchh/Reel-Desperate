@@ -20,3 +20,5 @@ MonoBehaviour:
   fishSpeed: 1.5
   erraticness: 0.368
   progressDrainRate: 0.2
+  sellPrice: 10
+  appearances: []

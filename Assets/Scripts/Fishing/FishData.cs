@@ -8,6 +8,12 @@ public enum FishRarity
     Legendary
 }
 
+[System.Serializable]
+public class FishAppearance
+{
+    public string fishName;
+    public Sprite sprite;
+}
 
 /*
 To create a new fish in unity:
@@ -43,4 +49,27 @@ public class FishData : ScriptableObject
     [Header("Economy")]
     [Tooltip("Sell price of fish")]
     public float sellPrice = 10f;
+
+    [Header("Fish Appearances")]
+    public FishAppearance[] appearances;
+
+    public FishAppearance GetRandomAppearance()
+    {
+        if (appearances != null && appearances.Length > 0)
+        {
+            int index = Random.Range(0, appearances.Length);
+
+            if (appearances[index] != null)
+            {
+                return appearances[index];
+            }
+        }
+
+        FishAppearance defaultAppearance = new FishAppearance();
+
+        defaultAppearance.fishName = fishName;
+        defaultAppearance.sprite = sprite;
+
+        return defaultAppearance;
+    }
 }

@@ -2,10 +2,18 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[System.Serializable]
+public class CaughtFish
+{
+    public FishData fishData;
+    public string fishName;
+    public Sprite sprite;
+}
+
 [RequireComponent(typeof(PlayerFishing))]
 public class Inventory : MonoBehaviour
 {
-    [SerializeField] private List<FishData> caughtFish = new List<FishData>();
+    [SerializeField] private List<CaughtFish> caughtFish = new List<CaughtFish>();
     [SerializeField] private FishData testFish;
 
     private PlayerFishing playerFishing;
@@ -38,27 +46,36 @@ public class Inventory : MonoBehaviour
             return;
         }
 
-        caughtFish.Add(fish);
-        Debug.Log("Added " + fish.fishName + " to inventory. Fish count: " + caughtFish.Count);
+        FishAppearance appearance = fish.GetRandomAppearance();
+
+        CaughtFish newFish = new CaughtFish();
+
+        newFish.fishData = fish;
+        newFish.fishName = appearance.fishName;
+        newFish.sprite = appearance.sprite;
+
+        caughtFish.Add(newFish);
+
+        Debug.Log("Caught " + newFish.fishName + " (" + fish.rarity + ")!");
+        Debug.Log("Inventory count: " + caughtFish.Count);
     }
 
     public void SellAllFish()
     {
         if (EconomyManager.Instance == null)
         {
-            Debug.LogWarning("EconomyManager is missing from the scene.");
+            Debug.LogWarning("EconomyManager is missing.");
             return;
         }
 
         if (EconomyManager.Instance.IsGameOver || EconomyManager.Instance.HasEscaped)
         {
-            Debug.Log("You cannot sell fish after the game has ended.");
             return;
         }
 
         if (caughtFish.Count == 0)
         {
-            Debug.Log("There are no fish to sell.");
+            Debug.Log("No fish to sell.");
             return;
         }
 
@@ -66,19 +83,24 @@ public class Inventory : MonoBehaviour
 
         for (int i = 0; i < caughtFish.Count; i++)
         {
-            if (caughtFish[i] != null)
+            if (caughtFish[i] != null && caughtFish[i].fishData != null)
             {
-                totalPrice += Mathf.RoundToInt(caughtFish[i].sellPrice);
+                int price = Mathf.RoundToInt(caughtFish[i].fishData.sellPrice);
+
+                totalPrice += price;
+
+                Debug.Log(caughtFish[i].fishName + " sold for $" + price);
             }
         }
 
         if (totalPrice <= 0)
         {
-            Debug.Log("These fish have no sell value.");
+            Debug.Log("Fish have no sell value.");
             return;
         }
 
         EconomyManager.Instance.SellFish(totalPrice);
+
         caughtFish.Clear();
 
         Debug.Log("Sold all fish for $" + totalPrice);
@@ -94,5 +116,12 @@ public class Inventory : MonoBehaviour
     private void TestSellAllFish()
     {
         SellAllFish();
+    }
+
+    [ContextMenu("TEST - Clear Inventory")]
+    private void TestClearInventory()
+    {
+        caughtFish.Clear();
+        Debug.Log("Inventory cleared.");
     }
 }
