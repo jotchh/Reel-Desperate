@@ -15,8 +15,10 @@ MonoBehaviour:
   fishName: Carmy
   sprite: {fileID: 2937899505246914955, guid: 0bcbae5c357886d47b9829540b56e157, type: 3}
   rarity: 3
-  biteChance: 0.26
-  sweetSpotSize: 0.167
-  fishSpeed: 1.5
-  erraticness: 0.368
-  progressDrainRate: 0.2
+  biteChance: 0.03
+  sweetSpotSize: 0.15
+  fishSpeed: 2
+  erraticness: 0.65
+  progressDrainRate: 0.3
+  sellPrice: 150
+  lastRarity: 3

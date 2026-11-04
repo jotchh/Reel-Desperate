@@ -25,7 +25,7 @@ public class FishData : ScriptableObject
 
     [Header("Bite")]
     [Tooltip("Chance (0-1) this fish bites on each bite check. (lower value = rarer)")]   
-    [Range(0f, 1f)] public float biteChance = 0.2f;
+    [Range(0f, 1f)] public float biteChance = 0.3f;
 
     [Header("Reel Minigame")]
     [Tooltip("Size of the sweet spot, as a fraction of the bar (lower value = harder)")]
@@ -43,4 +43,63 @@ public class FishData : ScriptableObject
     [Header("Economy")]
     [Tooltip("Sell price of fish")]
     public float sellPrice = 10f;
+
+    // -1 = not tracked yet, so fish made before rarity defaults keep their values.
+    [SerializeField, HideInInspector] private int lastRarity = -1;
+
+    private void OnValidate()
+    {
+        if (lastRarity != -1 && lastRarity != (int)rarity)
+            SetRarityDefaults();
+
+        lastRarity = (int)rarity;
+    }
+
+    [ContextMenu("Apply Rarity Defaults")]
+    private void ApplyRarityDefaults()
+    {
+        SetRarityDefaults();
+
+#if UNITY_EDITOR
+        UnityEditor.EditorUtility.SetDirty(this);
+#endif
+    }
+
+    private void SetRarityDefaults()
+    {
+        switch (rarity)
+        {
+            case FishRarity.Common:
+                SetValues(0.3f, 0.3f, 1.5f, 0.3f, 0.2f, 10f);
+                break;
+
+            case FishRarity.Uncommon:
+                SetValues(0.15f, 0.24f, 1.75f, 0.45f, 0.25f, 25f);
+                break;
+
+            case FishRarity.Rare:
+                SetValues(0.07f, 0.2f, 1.9f, 0.55f, 0.25f, 60f);
+                break;
+
+            case FishRarity.Legendary:
+                SetValues(0.03f, 0.15f, 2f, 0.65f, 0.3f, 150f);
+                break;
+        }
+    }
+
+    private void SetValues(
+        float biteChance,
+        float sweetSpotSize,
+        float fishSpeed,
+        float erraticness,
+        float progressDrainRate,
+        float sellPrice)
+    {
+        this.biteChance = biteChance;
+        this.sweetSpotSize = sweetSpotSize;
+        this.fishSpeed = fishSpeed;
+        this.erraticness = erraticness;
+        this.progressDrainRate = progressDrainRate;
+        this.sellPrice = sellPrice;
+    }
 }

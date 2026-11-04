@@ -8080,7 +8080,7 @@ GameObject:
   - component: {fileID: 1139878382}
   - component: {fileID: 1139878381}
   - component: {fileID: 1139878390}
-  - component: {fileID: 1139878391}
+  - component: {fileID: 1139878392}
   m_Layer: 3
   m_Name: Guy
   m_TagString: Untagged
@@ -8292,11 +8292,24 @@ MonoBehaviour:
   rodRight: {fileID: 491834175}
   fishPool:
   - {fileID: 11400000, guid: 6e24fd93958c74a719dff05c0a286a5d, type: 2}
+  - {fileID: 11400000, guid: bd2153fbc0a3e4d81955e82719beedbb, type: 2}
+  - {fileID: 11400000, guid: d3f6ca445226243b2a9d4f23e5bca196, type: 2}
+  - {fileID: 11400000, guid: 0cdfa0dacbea44265934a7c9a5125aa2, type: 2}
+  - {fileID: 11400000, guid: 43571e7b885d44676baa593dab06ac95, type: 2}
+  - {fileID: 11400000, guid: 8bf8cf32d5e0d4100b487db260bfbe75, type: 2}
+  - {fileID: 11400000, guid: 9ad823164ca7c4acc86450acaeb20714, type: 2}
+  - {fileID: 11400000, guid: 65259499bcce44bb687481c22bba44e5, type: 2}
+  - {fileID: 11400000, guid: 16029263461374935b26a6673a9160b2, type: 2}
+  - {fileID: 11400000, guid: 9b1ee6e5f55584827b3ca357919ee4ca, type: 2}
+  - {fileID: 11400000, guid: 93c549f85cfd84b1a8c488898157b786, type: 2}
+  - {fileID: 11400000, guid: d8c37c548b28649468847d74f052ea42, type: 2}
+  - {fileID: 11400000, guid: 99d2ec952abeb4b24a24ae40f615b811, type: 2}
+  - {fileID: 11400000, guid: ac667bc7b94d24bef85ed051fc3148e2, type: 2}
   minWaitTime: 1.5
   biteCheckInterval: 1
-  reactionWindow: 0.8
+  reactionWindow: 2
   biteIndicator: {fileID: 742933361}
-  minigame: {fileID: 1139878391}
+  minigame: {fileID: 1139878392}
 --- !u!114 &1139878384
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8330,7 +8343,7 @@ MonoBehaviour:
   fishSpeedMultiplier: 1
   reelStrength: 3
   progressFillMultiplier: 1
---- !u!114 &1139878391
+--- !u!114 &1139878392
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8342,6 +8355,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8fdd72f948dac4651bcf0c75e02d050a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::FishingMinigame
+  minigameRoot: {fileID: 345995942}
+  bar: {fileID: 2039644718}
+  sweetSpot: {fileID: 1788899982}
+  fishIcon: {fileID: 1531094232}
+  fishImage: {fileID: 1531094233}
+  pressureBar: {fileID: 2142218888}
+  pressureFill: {fileID: 61091256}
+  gravity: 2
+  fishSpeedScale: 0.3
+  retargetInterval: {x: 1.5, y: 0.3}
+  dartDistance: {x: 0.2, y: 1}
+  startProgress: 0.4
+  progressFillRate: 0.3
 --- !u!1 &1155527397
 GameObject:
   m_ObjectHideFlags: 0
