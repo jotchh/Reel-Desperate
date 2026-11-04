@@ -8,6 +8,12 @@ public enum FishRarity
     Legendary
 }
 
+[System.Serializable]
+public class FishAppearance
+{
+    public string fishName;
+    public Sprite sprite;
+}
 
 /*
 To create a new fish in unity:
@@ -70,19 +76,19 @@ public class FishData : ScriptableObject
         switch (rarity)
         {
             case FishRarity.Common:
-                SetValues(0.3f, 0.3f, 1.5f, 0.3f, 0.2f, 10f);
+                SetValues(0.3f, 0.3f, 1.5f, 0.3f, 0.2f, 1f);
                 break;
 
             case FishRarity.Uncommon:
-                SetValues(0.15f, 0.24f, 1.75f, 0.45f, 0.25f, 25f);
+                SetValues(0.15f, 0.24f, 1.75f, 0.45f, 0.25f, 2);
                 break;
 
             case FishRarity.Rare:
-                SetValues(0.07f, 0.2f, 1.9f, 0.55f, 0.25f, 60f);
+                SetValues(0.07f, 0.2f, 1.9f, 0.55f, 0.25f, 7f);
                 break;
 
             case FishRarity.Legendary:
-                SetValues(0.03f, 0.15f, 2f, 0.65f, 0.3f, 150f);
+                SetValues(0.03f, 0.15f, 2f, 0.65f, 0.3f, 10f);
                 break;
         }
     }
@@ -101,5 +107,28 @@ public class FishData : ScriptableObject
         this.erraticness = erraticness;
         this.progressDrainRate = progressDrainRate;
         this.sellPrice = sellPrice;
+    }
+
+    [Header("Fish Appearances")]
+    public FishAppearance[] appearances;
+
+    public FishAppearance GetRandomAppearance()
+    {
+        if (appearances != null && appearances.Length > 0)
+        {
+            int index = Random.Range(0, appearances.Length);
+
+            if (appearances[index] != null)
+            {
+                return appearances[index];
+            }
+        }
+
+        FishAppearance defaultAppearance = new FishAppearance();
+
+        defaultAppearance.fishName = fishName;
+        defaultAppearance.sprite = sprite;
+
+        return defaultAppearance;
     }
 }
