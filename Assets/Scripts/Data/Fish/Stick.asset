@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 70b3421a6ad394bec8e49d10b51da95b, type: 3}
   m_Name: Stick
   m_EditorClassIdentifier: Assembly-CSharp::FishData
-  fishName: Stick
-  sprite: {fileID: -306787472437928336, guid: 15250668610e935499d9a909c0a38ab2, type: 3}
+  fishName: Trash
+  sprite: {fileID: 0}
   rarity: 0
   biteChance: 0.3
   sweetSpotSize: 0.3
@@ -22,3 +22,6 @@ MonoBehaviour:
   progressDrainRate: 0.2
   sellPrice: 10
   lastRarity: 0
+  appearances:
+  - fishName: Stick
+    sprite: {fileID: -306787472437928336, guid: 15250668610e935499d9a909c0a38ab2, type: 3}

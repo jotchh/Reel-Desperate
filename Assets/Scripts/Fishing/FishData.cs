@@ -2,6 +2,7 @@ using UnityEngine;
 
 public enum FishRarity
 {
+    Trash,
     Common,
     Uncommon,
     Rare,
@@ -118,7 +119,8 @@ public class FishData : ScriptableObject
         {
             int index = Random.Range(0, appearances.Length);
 
-            if (appearances[index] != null)
+            if (appearances[index] != null &&
+                !string.IsNullOrEmpty(appearances[index].fishName))
             {
                 return appearances[index];
             }

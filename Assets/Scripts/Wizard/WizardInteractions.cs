@@ -1,28 +1,48 @@
+
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 using DG.Tweening;
 
 public class WizardInteraction : MonoBehaviour
 {
-    [Header("References")]
+    [Header("Wizard")]
     [SerializeField] private Transform wizardVisual;
-    [SerializeField] private GameObject talkPrompt;
-    [SerializeField] private FishShop fishShop;
-
-    [Header("Interaction")]
     [SerializeField] private float interactionDistance = 2f;
+    [SerializeField] private GameObject talkPrompt;
+
+    [Header("Shop")]
+    [SerializeField] private GameObject wizardMenu;
+    [SerializeField] private GameObject mainPanel;
+    [SerializeField] private GameObject sellPanel;
+    [SerializeField] private FishShop fishShop;
+    [SerializeField] private string upgradeSceneName = "WizardShop";
 
     [Header("Bounce")]
     [SerializeField] private float bounceDuration = 0.12f;
     [SerializeField] private float bounceAmount = 0.1f;
     [SerializeField] private float waddleAngle = 8f;
 
+    public static bool IsAnyMenuOpen { get; private set; }
+
     private PlayerInput input;
     private InputAction talkAction;
+
+    private PlayerMovement playerMovement;
+    private PlayerFishing playerFishing;
+
+    private bool movementWasEnabled;
+    private bool fishingWasEnabled;
+    private bool menuOpen;
 
     private Vector3 originalScale;
     private Vector3 originalRotation;
     private Sequence bounceTween;
+
+    public void TestButton()
+    {
+        Debug.Log("BUTTON CLICKED!");
+    }
 
     private void Awake()
     {
@@ -42,6 +62,11 @@ public class WizardInteraction : MonoBehaviour
         originalScale = wizardVisual.localScale;
         originalRotation = wizardVisual.localEulerAngles;
 
+        if (wizardMenu != null)
+        {
+            wizardMenu.SetActive(false);
+        }
+
         if (talkPrompt != null)
         {
             talkPrompt.SetActive(false);
@@ -58,7 +83,7 @@ public class WizardInteraction : MonoBehaviour
     {
         if (talkPrompt != null)
         {
-            talkPrompt.SetActive(CanTalk());
+            talkPrompt.SetActive(!menuOpen && CanTalk());
         }
     }
 
@@ -74,31 +99,150 @@ public class WizardInteraction : MonoBehaviour
             return false;
         }
 
-        Vector3 playerPosition = PlayerManager.Instance.transform.position;
-        Vector3 wizardPosition = wizardVisual.position;
+        Inventory inventory = PlayerManager.Instance.GetComponent<Inventory>();
 
-        float distance = Vector2.Distance(playerPosition, wizardPosition);
+        if (inventory != null && inventory.IsOpen)
+        {
+            return false;
+        }
+
+        float distance = Vector2.Distance(
+            PlayerManager.Instance.transform.position,
+            wizardVisual.position
+        );
 
         return distance <= interactionDistance;
     }
 
     private void OnTalk(InputAction.CallbackContext context)
     {
-        if (!CanTalk())
+        if (menuOpen)
+        {
+            CloseMenu();
+        }
+        else if (!IsAnyMenuOpen && CanTalk())
+        {
+            OpenMenu();
+        }
+    }
+
+    public void OpenMenu()
+    {
+        if (menuOpen || IsAnyMenuOpen || !CanTalk())
         {
             return;
         }
 
+        if (wizardMenu == null || mainPanel == null || sellPanel == null)
+        {
+            Debug.LogWarning("Wizard: Menu panels are missing.");
+            return;
+        }
+
+        PlayerManager player = PlayerManager.Instance;
+
+        playerMovement = player.GetComponent<PlayerMovement>();
+        playerFishing = player.GetComponent<PlayerFishing>();
+
+        movementWasEnabled = playerMovement != null && playerMovement.enabled;
+        fishingWasEnabled = playerFishing != null && playerFishing.enabled;
+
+        if (playerMovement != null)
+        {
+            playerMovement.StopMovement();
+            playerMovement.enabled = false;
+        }
+
+        if (playerFishing != null)
+        {
+            playerFishing.enabled = false;
+        }
+
+        menuOpen = true;
+        IsAnyMenuOpen = true;
+
         Bounce();
+
+        wizardMenu.SetActive(true);
+        BackToMain();
+
+        if (talkPrompt != null)
+        {
+            talkPrompt.SetActive(false);
+        }
+    }
+
+    public void OpenSellPanel()
+    {
+        if (!menuOpen)
+        {
+            return;
+        }
+
+        mainPanel.SetActive(false);
+        sellPanel.SetActive(true);
 
         if (fishShop != null)
         {
-            fishShop.SellAll();
+            fishShop.RefreshSellPanel();
         }
-        else
+    }
+
+    public void BackToMain()
+    {
+        if (!menuOpen)
         {
-            Debug.LogWarning("Wizard: FishShop is missing.");
+            return;
         }
+
+        mainPanel.SetActive(true);
+        sellPanel.SetActive(false);
+    }
+
+    public void OpenUpgradesScene()
+    {
+        if (!menuOpen)
+        {
+            return;
+        }
+
+        if (!Application.CanStreamedLevelBeLoaded(upgradeSceneName))
+        {
+            Debug.LogWarning("WizardShop scene is not in the build list.");
+            return;
+        }
+
+        CloseMenu();
+        SceneManager.LoadScene(upgradeSceneName);
+    }
+
+    public void CloseMenu()
+    {
+        if (!menuOpen)
+        {
+            return;
+        }
+
+        menuOpen = false;
+        IsAnyMenuOpen = false;
+
+        if (wizardMenu != null)
+        {
+            wizardMenu.SetActive(false);
+        }
+
+        if (playerMovement != null)
+        {
+            playerMovement.enabled = movementWasEnabled;
+        }
+
+        if (playerFishing != null)
+        {
+            playerFishing.enabled = fishingWasEnabled;
+        }
+
+        playerMovement = null;
+        playerFishing = null;
     }
 
     private void Bounce()
@@ -144,7 +288,8 @@ public class WizardInteraction : MonoBehaviour
         );
 
         bounceTween.Append(
-            wizardVisual.DOScale(originalScale, bounceDuration).SetEase(Ease.OutBack)
+            wizardVisual.DOScale(originalScale, bounceDuration)
+                .SetEase(Ease.OutBack)
         );
 
         bounceTween.Join(
@@ -154,15 +299,10 @@ public class WizardInteraction : MonoBehaviour
 
     private void OnDisable()
     {
-        if (talkAction != null)
-        {
-            talkAction.performed -= OnTalk;
-        }
+        talkAction.performed -= OnTalk;
+        input.Player.Disable();
 
-        if (input != null)
-        {
-            input.Player.Disable();
-        }
+        CloseMenu();
 
         if (bounceTween != null)
         {
