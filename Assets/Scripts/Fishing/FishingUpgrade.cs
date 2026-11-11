@@ -22,7 +22,6 @@ public class FishingUpgrade : ScriptableObject
     public Sprite sprite;
 
     [TextArea] public string description;
-    public int cost;
 
     [Header("Bite")]
     [Tooltip("Multiply bite chance (0.25 = 125%)")]
@@ -40,8 +39,4 @@ public class FishingUpgrade : ScriptableObject
 
     [Tooltip("Added to the progress fill multiplier.")]
     public float progressFillMultiplierBonus;
-
-    [Header("Economy")]
-    [Tooltip("Buy price of upgrade")]
-    public float buyPrice = 10f;
 }
