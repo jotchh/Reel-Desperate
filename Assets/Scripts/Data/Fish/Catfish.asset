@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 70b3421a6ad394bec8e49d10b51da95b, type: 3}
   m_Name: Catfish
   m_EditorClassIdentifier: Assembly-CSharp::FishData
-  fishName: Fish
-  sprite: {fileID: 0}
+  fishName: Catfish
+  sprite: {fileID: 605842188648647406, guid: d19484b86ed667645a0aa6bfc7296c64, type: 3}
   rarity: 1
   biteChance: 0.3
   sweetSpotSize: 0.3
@@ -21,5 +21,5 @@ MonoBehaviour:
   erraticness: 0.3
   progressDrainRate: 0.2
   sellPrice: 10
-  lastRarity: -1
+  lastRarity: 1
   appearances: []

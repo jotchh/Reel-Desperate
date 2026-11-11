@@ -12,14 +12,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 70b3421a6ad394bec8e49d10b51da95b, type: 3}
   m_Name: Goldfish
   m_EditorClassIdentifier: Assembly-CSharp::FishData
-  fishName: Fish
-  sprite: {fileID: 0}
-  rarity: 1
-  biteChance: 0.3
-  sweetSpotSize: 0.3
-  fishSpeed: 1.5
-  erraticness: 0.3
-  progressDrainRate: 0.2
-  sellPrice: 10
-  lastRarity: -1
+  fishName: Goldfish
+  sprite: {fileID: -438267327460216282, guid: 69399544dcb29fc4d95f24413432f34c, type: 3}
+  rarity: 2
+  biteChance: 0.15
+  sweetSpotSize: 0.24
+  fishSpeed: 1.75
+  erraticness: 0.45
+  progressDrainRate: 0.25
+  sellPrice: 2
+  lastRarity: 2
   appearances: []

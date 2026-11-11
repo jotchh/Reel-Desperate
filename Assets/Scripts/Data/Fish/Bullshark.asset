@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 70b3421a6ad394bec8e49d10b51da95b, type: 3}
   m_Name: Bullshark
   m_EditorClassIdentifier: Assembly-CSharp::FishData
-  fishName: Fish
-  sprite: {fileID: 0}
+  fishName: Bullshark
+  sprite: {fileID: 8930436290927748540, guid: 2dc1b977b6117824caba152a38a9511c, type: 3}
   rarity: 1
   biteChance: 0.3
   sweetSpotSize: 0.3
@@ -21,5 +21,5 @@ MonoBehaviour:
   erraticness: 0.3
   progressDrainRate: 0.2
   sellPrice: 10
-  lastRarity: -1
+  lastRarity: 1
   appearances: []

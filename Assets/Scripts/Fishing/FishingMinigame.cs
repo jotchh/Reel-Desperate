@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 public class FishingMinigame : MonoBehaviour
 {
@@ -11,6 +12,14 @@ public class FishingMinigame : MonoBehaviour
     [SerializeField] private Image fishImage;
     [SerializeField] private RectTransform pressureBar;
     [SerializeField] private RectTransform pressureFill;
+    [SerializeField] private TMP_Text fishToolTip;
+
+    [Header("Rarity Colors")]
+    [SerializeField] private Color trashColor = new Color(0.6f, 0.6f, 0.6f);     // gray
+    [SerializeField] private Color commonColor = Color.white;
+    [SerializeField] private Color uncommonColor = new Color(0.4f, 0.9f, 0.4f);  // green
+    [SerializeField] private Color rareColor = new Color(0.35f, 0.6f, 1f);       // blue
+    [SerializeField] private Color legendaryColor = new Color(1f, 0.75f, 0.2f);  // gold
 
     [Header("Sweet Spot Movement")]
     [Tooltip("How quickly the sweet spot falls while Reel is not held (bars per second, per second)")]
@@ -78,6 +87,11 @@ public class FishingMinigame : MonoBehaviour
         if (fishImage != null && fish.sprite != null)
             fishImage.sprite = fish.sprite;
 
+    if (fishToolTip != null)
+    {
+        string hex = ColorUtility.ToHtmlStringRGB(GetRarityColor(fish.rarity));
+        fishToolTip.text = $"<color=#{hex}>{fish.fishName}\n${Mathf.RoundToInt(fish.sellPrice)}</color>";
+    }
         // Sizes are set in the bar's local space, so undo the scale set on each element.
         SetHeight(sweetSpot, bar.rect.height * sweetSpotSize);
 
@@ -204,4 +218,16 @@ public class FishingMinigame : MonoBehaviour
         size.y = height / element.localScale.y;
         element.sizeDelta = size;
     }
-}
+
+    private Color GetRarityColor(FishRarity rarity)
+    {
+        switch (rarity)
+        {
+            case FishRarity.Trash:     return trashColor;
+            case FishRarity.Uncommon:  return uncommonColor;
+            case FishRarity.Rare:      return rareColor;
+            case FishRarity.Legendary: return legendaryColor;
+            default:                   return commonColor;
+        }
+    }
+    }
