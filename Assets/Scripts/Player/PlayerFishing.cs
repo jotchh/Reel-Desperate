@@ -1,3 +1,4 @@
+
 using System.Collections;
 using System.Collections.Generic;
 using DG.Tweening;
@@ -138,7 +139,11 @@ public class PlayerFishing : MonoBehaviour
     private void StartFishing()
     {
         if (fishPool == null || fishPool.Length == 0)
-            Debug.LogWarning("PlayerFishing: Fish Pool is empty, nothing will bite!");
+        {
+            Debug.LogWarning(
+                "PlayerFishing: Fish Pool is empty, nothing will bite!"
+            );
+        }
 
         playerManager.SetState(PlayerState.Fishing);
 
@@ -172,8 +177,17 @@ public class PlayerFishing : MonoBehaviour
         HideBiteIndicator();
         HideAllRods();
 
-        if (playerManager != null && playerManager.CurrentState == PlayerState.Fishing)
+        if (playerManager != null &&
+            playerManager.CurrentState == PlayerState.Fishing)
+        {
             playerManager.SetState(PlayerState.Alive);
+        }
+    }
+
+    // Called by RunManager when the day ends.
+    public void EndFishingForDay()
+    {
+        StopFishing();
     }
 
     private IEnumerator BiteLoop()
@@ -196,8 +210,10 @@ public class PlayerFishing : MonoBehaviour
 
             yield return new WaitForSeconds(reactionWindow);
 
-            // Player didn't click in time; HookFish() stops this coroutine if they did.
-            Debug.Log($"The {fish.fishName} got away before you could hook it.");
+            // Player didn't click in time.
+            Debug.Log(
+                $"The {fish.fishName} got away before you could hook it."
+            );
 
             hookedFish = null;
             phase = FishingPhase.Waiting;
@@ -214,8 +230,11 @@ public class PlayerFishing : MonoBehaviour
 
         foreach (FishData fish in fishPool)
         {
-            if (fish != null && Random.value < fish.biteChance * stats.biteChanceMultiplier)
+            if (fish != null &&
+                Random.value < fish.biteChance * stats.biteChanceMultiplier)
+            {
                 bites.Add(fish);
+            }
         }
 
         if (bites.Count == 0)
@@ -237,26 +256,47 @@ public class PlayerFishing : MonoBehaviour
 
         if (minigame == null)
         {
-            Debug.LogWarning("PlayerFishing: Minigame is not assigned! Catching instantly.");
+            Debug.LogWarning(
+                "PlayerFishing: Minigame is not assigned! Catching instantly."
+            );
+
             OnMinigameFinished(true);
             return;
         }
 
-        minigame.Begin(hookedFish, stats, () => reelAction.IsPressed(), OnMinigameFinished);
+        minigame.Begin(
+            hookedFish,
+            stats,
+            () => reelAction.IsPressed(),
+            OnMinigameFinished
+        );
     }
 
     private void OnMinigameFinished(bool caught)
     {
         FishData fish = hookedFish;
 
-        if (caught)
+        // Ignore a result if the day ended while reeling.
+        if (RunManager.Instance == null ||
+            !RunManager.Instance.IsDayActive)
+        {
+            StopFishing();
+            return;
+        }
+
+        if (caught && fish != null)
         {
             Debug.Log($"Caught a {fish.fishName}!");
+
+            // Add fish to Inventory first.
             FishCaught?.Invoke(fish);
+
+            // Then consume bait.
+            RunManager.Instance.UseBait();
         }
         else
         {
-            Debug.Log($"The {fish.fishName} escaped!");
+            Debug.Log($"The {fish?.fishName ?? "fish"} escaped!");
         }
 
         StopFishing();
@@ -272,7 +312,13 @@ public class PlayerFishing : MonoBehaviour
         Transform indicator = biteIndicator.transform;
         indicator.DOKill();
         indicator.localScale = biteIndicatorScale;
-        indicator.DOPunchScale(biteIndicatorScale * 0.5f, 0.3f, 8, 0.5f);
+
+        indicator.DOPunchScale(
+            biteIndicatorScale * 0.5f,
+            0.3f,
+            8,
+            0.5f
+        );
     }
 
     private void HideBiteIndicator()
@@ -328,6 +374,14 @@ public class PlayerFishing : MonoBehaviour
 
     private bool CanFish()
     {
+        // Check whether the current day allows fishing.
+        if (RunManager.Instance == null ||
+            !RunManager.Instance.IsDayActive ||
+            RunManager.Instance.RemainingBait <= 0)
+        {
+            return false;
+        }
+
         if (groundTilemap == null)
         {
             Debug.LogWarning(
@@ -344,7 +398,7 @@ public class PlayerFishing : MonoBehaviour
         {
             Vector3Int neighborCell = playerCell + direction;
 
-            // An adjacent cell without a ground tile is treated as water. For now.
+            // An adjacent cell without a ground tile is treated as water.
             if (!groundTilemap.HasTile(neighborCell))
             {
                 waterDirection = direction;
