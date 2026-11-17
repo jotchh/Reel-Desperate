@@ -2,6 +2,7 @@
 using System;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class RunManager : MonoBehaviour
 {
@@ -21,11 +22,18 @@ public class RunManager : MonoBehaviour
     [Header("References")]
     [SerializeField] private PlayerFishing playerFishing;
 
-    [Header("UI")]
+    [Header("HUD")]
     [SerializeField] private TMP_Text dayText;
     [SerializeField] private TMP_Text timerText;
     [SerializeField] private TMP_Text baitText;
     [SerializeField] private TMP_Text quotaText;
+    [SerializeField] private Button endDayButton;
+
+    [Header("Upgrade Menu")]
+    [SerializeField] private GameObject upgradeMenuPrefab;
+    [SerializeField] private Transform upgradeMenuParent;
+
+private GameObject upgradeMenuInstance;
 
     public int CurrentDay =>
         EconomyManager.Instance != null
@@ -38,6 +46,25 @@ public class RunManager : MonoBehaviour
     public RunPhase CurrentPhase { get; private set; }
 
     public bool IsDayActive => CurrentPhase == RunPhase.Day;
+
+    // Player can end the day early if they run out of bait
+    // OR have enough earned money and balance to pay the quota.
+    private bool CanEndDayEarly
+    {
+        get
+        {
+            if (!IsDayActive || EconomyManager.Instance == null)
+                return false;
+
+            EconomyManager economy = EconomyManager.Instance;
+
+            bool quotaMet =
+                economy.TodayEarned >= economy.DailyQuota &&
+                economy.Money >= economy.DailyQuota;
+
+            return RemainingBait <= 0 || quotaMet;
+        }
+    }
 
     public event Action<int> OnDayStarted;
     public event Action<int> OnBaitChanged;
@@ -59,6 +86,12 @@ public class RunManager : MonoBehaviour
 
     private void Start()
     {
+        if (endDayButton != null)
+        {
+            endDayButton.onClick.AddListener(EndDayEarly);
+            endDayButton.gameObject.SetActive(false);
+        }
+
         StartDay();
     }
 
@@ -93,8 +126,8 @@ public class RunManager : MonoBehaviour
             return;
         }
 
+        // Reset day state.
         CurrentPhase = RunPhase.Day;
-
         TimeRemaining = dayDuration;
         RemainingBait = baitPerDay;
 
@@ -121,12 +154,31 @@ public class RunManager : MonoBehaviour
         Debug.Log($"Bait remaining: {RemainingBait}");
 
         UpdateUI();
-
-        if (RemainingBait <= 0)
-            EndDay();
     }
 
-    public void EndDay()
+    public void EndDayEarly()
+    {
+        if (!CanEndDayEarly)
+            return;
+
+        EndDay();
+    }
+
+    private void OpenUpgradeMenu()
+    {
+        if (upgradeMenuInstance != null)
+            return;
+
+        if (upgradeMenuPrefab == null)
+        {
+            Debug.LogError("Upgrade Menu Prefab is missing!");
+            return;
+        }
+
+        upgradeMenuInstance = Instantiate(upgradeMenuPrefab);
+    }
+
+    private void EndDay()
     {
         if (!IsDayActive)
             return;
@@ -134,32 +186,37 @@ public class RunManager : MonoBehaviour
         CurrentPhase = RunPhase.DayEnd;
         TimeRemaining = 0f;
 
-        // Stop ongoing fishing.
         if (playerFishing != null)
             playerFishing.EndFishingForDay();
 
-        // Let EconomyManager handle quota payment.
         bool quotaMet = EconomyManager.Instance.EndDay();
 
         if (!quotaMet)
+        {
             CurrentPhase = RunPhase.GameOver;
+            UpdateUI();
+            OnDayEnded?.Invoke(false);
+            return;
+        }
+
+        // Successful day: open the upgrade menu.
+        OpenUpgradeMenu();
 
         UpdateUI();
-
-        Debug.Log(
-            quotaMet
-                ? $"Day {CurrentDay - 1} completed!"
-                : "Game Over! Daily quota was not met."
-        );
-
-        OnDayEnded?.Invoke(quotaMet);
+        OnDayEnded?.Invoke(true);
     }
 
-    // Called after the player selects an upgrade.
+    // Call after the player selects an upgrade.
     public void StartNextDay()
     {
         if (CurrentPhase != RunPhase.DayEnd)
             return;
+
+        if (upgradeMenuInstance != null)
+        {
+            Destroy(upgradeMenuInstance);
+            upgradeMenuInstance = null;
+        }
 
         StartDay();
     }
@@ -184,12 +241,20 @@ public class RunManager : MonoBehaviour
         {
             EconomyManager economy = EconomyManager.Instance;
 
-            quotaText.text = $"QUOTA: ${economy.TodayEarned} / ${economy.DailyQuota}";
+            quotaText.text =
+                $"QUOTA: ${economy.TodayEarned} / ${economy.DailyQuota}";
         }
+
+        // Show early-end button when quota is met or bait runs out.
+        if (endDayButton != null)
+            endDayButton.gameObject.SetActive(CanEndDayEarly);
     }
 
     private void OnDestroy()
     {
+        if (endDayButton != null)
+            endDayButton.onClick.RemoveListener(EndDayEarly);
+
         if (Instance == this)
             Instance = null;
     }

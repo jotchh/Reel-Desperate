@@ -39,4 +39,8 @@ public class FishingUpgrade : ScriptableObject
 
     [Tooltip("Added to the progress fill multiplier.")]
     public float progressFillMultiplierBonus;
+
+    [Header("Economy")]
+    [Tooltip("Added to the sell price multiplier (0.10 = +10%).")]
+    public float sellPriceMultiplierBonus;
 }

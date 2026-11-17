@@ -10,8 +10,21 @@ public class UpgradeMenu : MonoBehaviour
     [Header("Available Upgrades")]
     [SerializeField] private FishingUpgrade[] upgrades;
 
+    private FishingStats fishingStats;
+    private bool upgradeSelected;
+
     private void Start()
     {
+        // Get the player's FishingStats component.
+        if (PlayerManager.Instance != null)
+            fishingStats = PlayerManager.Instance.GetComponent<FishingStats>();
+
+        if (fishingStats == null)
+        {
+            Debug.LogError("Could not find the player's FishingStats!");
+            return;
+        }
+
         GenerateCards();
     }
 
@@ -35,12 +48,34 @@ public class UpgradeMenu : MonoBehaviour
             if (i < available.Count)
             {
                 cards[i].gameObject.SetActive(true);
-                cards[i].SetUpgrade(available[i]);
+                cards[i].SetUpgrade(available[i], SelectUpgrade);
             }
             else
             {
                 cards[i].gameObject.SetActive(false);
             }
         }
+    }
+
+    private void SelectUpgrade(FishingUpgrade upgrade)
+    {
+        if (upgradeSelected || upgrade == null)
+            return;
+
+        if (RunManager.Instance == null || fishingStats == null)
+        {
+            Debug.LogError("Cannot apply upgrade: missing RunManager or FishingStats.");
+            return;
+        }
+
+        upgradeSelected = true;
+
+        // Apply the selected upgrade to the player.
+        fishingStats.ApplyUpgrade(upgrade);
+
+        Debug.Log("Selected upgrade: " + upgrade.upgradeName);
+
+        // Close menu and begin the next day.
+        RunManager.Instance.StartNextDay();
     }
 }

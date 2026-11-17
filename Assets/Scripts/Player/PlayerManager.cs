@@ -1,5 +1,6 @@
 
 using UnityEngine;
+using DG.Tweening;
 
 public enum PlayerState
 {
@@ -17,9 +18,16 @@ public class PlayerManager : MonoBehaviour
 
     public PlayerState CurrentState { get; private set; } = PlayerState.Alive;
 
+    [Header("Explosion")]
+    [SerializeField] private SpriteRenderer spriteRenderer;
+    [SerializeField] private Sprite[] explosionFrames;
+    [SerializeField] private float frameDuration = 0.08f;
+
     private PlayerMovement movement;
     private PlayerFishing fishing;
     private PlayerAnimation playerAnimation;
+
+    private Sequence explosionSequence;
 
     private void Awake()
     {
@@ -34,14 +42,14 @@ public class PlayerManager : MonoBehaviour
         movement = GetComponent<PlayerMovement>();
         fishing = GetComponent<PlayerFishing>();
         playerAnimation = GetComponent<PlayerAnimation>();
+
+        if (spriteRenderer == null)
+            spriteRenderer = GetComponent<SpriteRenderer>();
     }
 
     public void SetState(PlayerState newState)
     {
         if (CurrentState == newState)
-            return;
-
-        if (CurrentState == PlayerState.Dead)
             return;
 
         CurrentState = newState;
@@ -50,10 +58,50 @@ public class PlayerManager : MonoBehaviour
         {
             movement.StopMovement();
         }
+
+        if (newState == PlayerState.Dead)
+        {
+            Debug.Log("Player exploded!");
+
+            fishing.EndFishingForDay();
+            PlayExplosion();
+        }
+    }
+
+    private void PlayExplosion()
+    {
+        if (spriteRenderer == null || explosionFrames == null || explosionFrames.Length == 0)
+        {
+            Debug.LogWarning("Explosion sprites are missing!");
+            return;
+        }
+
+        explosionSequence?.Kill();
+
+        explosionSequence = DOTween.Sequence();
+
+        foreach (Sprite frame in explosionFrames)
+        {
+            Sprite currentFrame = frame;
+
+            explosionSequence.AppendCallback(() =>
+            {
+                spriteRenderer.sprite = currentFrame;
+            });
+
+            explosionSequence.AppendInterval(frameDuration);
+        }
+
+        explosionSequence.OnComplete(() =>
+        {
+            gameObject.SetActive(false);
+        });
     }
 
     private void OnDestroy()
     {
+        explosionSequence?.Kill();
+
         if (Instance == this)
         {
             Instance = null;

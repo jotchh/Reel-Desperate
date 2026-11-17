@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 39ce2f9f760b44fe6ae44dc510e15093, type: 3}
+  m_Name: GoldenScales
+  m_EditorClassIdentifier: Assembly-CSharp::FishingUpgrade
+  upgradeName: Golden Scales
+  sprite: {fileID: 6014815648718018914, guid: 62fcf5eb04ec0004983a7a79c6805126, type: 3}
+  description: Increases the selling price of all fish by 10%. Calculated at checkout!
+  biteChanceMultiplierBonus: 0
+  sweetSpotSizeBonus: 0
+  fishSpeedMultiplierBonus: 0
+  reelStrengthBonus: 0
+  progressFillMultiplierBonus: 0
+  sellPriceMultiplierBonus: 0.1

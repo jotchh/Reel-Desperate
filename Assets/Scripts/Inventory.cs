@@ -62,14 +62,23 @@ public class Inventory : MonoBehaviour
 
                 if (fish != null && fish.fishData != null)
                 {
-                    int price = Mathf.RoundToInt(fish.fishData.sellPrice);
-
+                    int price = GetAdjustedFishPrice(fish);
                     total += price * fish.quantity;
                 }
             }
 
             return total;
         }
+    }
+
+    private int GetAdjustedFishPrice(CaughtFish fish)
+    {
+        int basePrice = Mathf.RoundToInt(fish.fishData.sellPrice);
+
+        if (EconomyManager.Instance == null)
+            return basePrice;
+
+        return EconomyManager.Instance.GetFishSellPrice(basePrice);
     }
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
@@ -263,7 +272,7 @@ public class Inventory : MonoBehaviour
                 continue;
             }
 
-            int price = Mathf.RoundToInt(fish.fishData.sellPrice);
+            int price = GetAdjustedFishPrice(fish);
             int subtotal = price * fish.quantity;
 
             result += fish.fishName + " x" + fish.quantity +
@@ -442,9 +451,7 @@ public class Inventory : MonoBehaviour
                     }
                 }
 
-                int price =
-                    Mathf.RoundToInt(fish.fishData.sellPrice);
-
+                int price = GetAdjustedFishPrice(fish);
                 int subtotal = price * fish.quantity;
 
                 if (priceObject != null)

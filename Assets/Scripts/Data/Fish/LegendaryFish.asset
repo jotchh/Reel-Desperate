@@ -20,7 +20,8 @@ MonoBehaviour:
   fishSpeed: 1.5
   erraticness: 0.3
   progressDrainRate: 0.2
-  sellPrice: 10
+  sellPrice: 15
+  lastRarity: 3
   appearances:
   - fishName: Whale
     sprite: {fileID: 935035809845438407, guid: ddc0bc21ba4979145ab09cb527bb103c, type: 3}

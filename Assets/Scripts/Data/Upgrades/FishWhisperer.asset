@@ -15,10 +15,9 @@ MonoBehaviour:
   upgradeName: Fish Whisperer
   sprite: {fileID: -4754760954249483031, guid: f3f627c6c6ef66540803b6b9437d0df8, type: 3}
   description: Increases bite chance by 5%
-  cost: 0
   biteChanceMultiplierBonus: 0.05
   sweetSpotSizeBonus: 0
   fishSpeedMultiplierBonus: 0
   reelStrengthBonus: 0
   progressFillMultiplierBonus: 0
-  buyPrice: 10
+  sellPriceMultiplierBonus: 0

@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using DG.Tweening;
+using System;
 
 public class UpgradeCard : MonoBehaviour,
     IPointerEnterHandler, IPointerExitHandler
@@ -14,6 +15,7 @@ public class UpgradeCard : MonoBehaviour,
     [SerializeField] private Image upgradeImage;
     [SerializeField] private Button button;
 
+    [Header("Audio")]
     public AudioSource audioSource;
     public AudioClip onClickClip;
 
@@ -22,25 +24,46 @@ public class UpgradeCard : MonoBehaviour,
     [SerializeField] private float animationDuration = 0.2f;
 
     private FishingUpgrade upgrade;
-    private Tween scaleTween;
+    private Action<FishingUpgrade> onSelected;
 
+    private Tween scaleTween;
     private Vector3 originalScale;
 
     private void Awake()
     {
         originalScale = transform.localScale;
+
+        if (button == null)
+            button = GetComponent<Button>();
     }
 
-    public void SetUpgrade(FishingUpgrade upgrade)
+    public void SetUpgrade(
+        FishingUpgrade upgrade,
+        Action<FishingUpgrade> callback)
     {
         if (upgrade == null)
             return;
 
         this.upgrade = upgrade;
+        onSelected = callback;
 
         upgradeNameText.text = upgrade.upgradeName;
         descriptionText.text = upgrade.description;
         upgradeImage.sprite = upgrade.sprite;
+
+        button.onClick.RemoveListener(SelectUpgrade);
+        button.onClick.AddListener(SelectUpgrade);
+    }
+
+    private void SelectUpgrade()
+    {
+        if (upgrade == null)
+            return;
+
+        if (audioSource != null && onClickClip != null)
+            audioSource.PlayOneShot(onClickClip);
+
+        onSelected?.Invoke(upgrade);
     }
 
     public void OnPointerEnter(PointerEventData eventData)
@@ -66,5 +89,8 @@ public class UpgradeCard : MonoBehaviour,
     private void OnDestroy()
     {
         scaleTween?.Kill();
+
+        if (button != null)
+            button.onClick.RemoveListener(SelectUpgrade);
     }
 }

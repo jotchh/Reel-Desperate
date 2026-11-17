@@ -45,12 +45,26 @@ public class EconomyManager : MonoBehaviour
         Money = startingMoney;
     }
 
+    public int GetFishSellPrice(int basePrice)
+    {
+        float multiplier = 1f;
+
+        if (PlayerManager.Instance != null)
+        {
+            FishingStats stats =
+                PlayerManager.Instance.GetComponent<FishingStats>();
+
+            if (stats != null)
+                multiplier = stats.sellPriceMultiplier;
+        }
+
+        return Mathf.RoundToInt(basePrice * multiplier);
+    }
+
     public void SellFish(int sellPrice)
     {
         if (IsGameOver || HasEscaped || sellPrice <= 0)
-        {
             return;
-        }
 
         Money += sellPrice;
         TodayEarned += sellPrice;

@@ -11,6 +11,9 @@ public class FishingStats : MonoBehaviour
     public float reelStrength = 3f;
     public float progressFillMultiplier = 1f;
 
+    [Header("Economy")]
+    public float sellPriceMultiplier = 1f;
+
     public void ApplyUpgrade(FishingUpgrade upgrade)
     {
         if (upgrade == null)
@@ -21,5 +24,6 @@ public class FishingStats : MonoBehaviour
         fishSpeedMultiplier += upgrade.fishSpeedMultiplierBonus;
         reelStrength += upgrade.reelStrengthBonus;
         progressFillMultiplier += upgrade.progressFillMultiplierBonus;
+        sellPriceMultiplier += upgrade.sellPriceMultiplierBonus;
     }
 }

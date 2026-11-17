@@ -14,11 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::FishingUpgrade
   upgradeName: Quick Retrieve
   sprite: {fileID: -6518752645308750627, guid: b37676ca70bd95d4db3e5b25bb17a63f, type: 3}
-  description: Increase progress fill rate by 5%.
-  cost: 0
+  description: Increase progress fill rate by 10%.
   biteChanceMultiplierBonus: 0
   sweetSpotSizeBonus: 0
   fishSpeedMultiplierBonus: 0
   reelStrengthBonus: 0
-  progressFillMultiplierBonus: 0.05
-  buyPrice: 10
+  progressFillMultiplierBonus: 0.1
+  sellPriceMultiplierBonus: 0

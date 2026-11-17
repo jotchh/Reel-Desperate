@@ -14,11 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::FishingUpgrade
   upgradeName: Iron Grip
   sprite: {fileID: 4856963183710769406, guid: 81eb264c5a6d39a4886d0fe82b2ac7d6, type: 3}
-  description: 'Increases reel strength by 10%. '
-  cost: 0
+  description: 'Increases reel strength by 25%. '
   biteChanceMultiplierBonus: 0
   sweetSpotSizeBonus: 0
   fishSpeedMultiplierBonus: 0
-  reelStrengthBonus: 0.1
+  reelStrengthBonus: 0.25
   progressFillMultiplierBonus: 0
-  buyPrice: 10
+  sellPriceMultiplierBonus: 0
