@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Koi
   m_EditorClassIdentifier: Assembly-CSharp::FishData
   fishName: Koi
-  sprite: {fileID: 0}
+  sprite: {fileID: -5512662967566246731, guid: 898f59e78b6140146b3a61e37d2bd241, type: 3}
   rarity: 2
   biteChance: 0.15
   sweetSpotSize: 0.24
