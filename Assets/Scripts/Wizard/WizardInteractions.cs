@@ -216,6 +216,22 @@ public class WizardInteraction : MonoBehaviour
         SceneManager.LoadScene(upgradeSceneName);
     }
 
+    public void BuyBoat()
+    {
+        if (EconomyManager.Instance == null) return;
+
+        if (EconomyManager.Instance.TryBuyBoat())
+        {
+            Debug.Log("Player purchased the boat!");
+            // TO DO: Play ending anim.
+        }
+        else
+        {
+            Debug.Log("You don't have enough money!");
+            // TO DO: Display insufficient funds dialogue.
+        }
+    }
+
     public void CloseMenu()
     {
         if (!menuOpen)
