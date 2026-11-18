@@ -14,10 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::FishingUpgrade
   upgradeName: Golden Scales
   sprite: {fileID: 6014815648718018914, guid: 62fcf5eb04ec0004983a7a79c6805126, type: 3}
-  description: Increases the selling price of all fish by 10%. Calculated at checkout!
+  description: 'Increases the selling price of all fish by 25%. '
   biteChanceMultiplierBonus: 0
   sweetSpotSizeBonus: 0
   fishSpeedMultiplierBonus: 0
   reelStrengthBonus: 0
   progressFillMultiplierBonus: 0
-  sellPriceMultiplierBonus: 0.1
+  sellPriceMultiplierBonus: 0.25

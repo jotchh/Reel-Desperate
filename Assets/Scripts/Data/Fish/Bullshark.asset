@@ -14,12 +14,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::FishData
   fishName: Bullshark
   sprite: {fileID: 8930436290927748540, guid: 2dc1b977b6117824caba152a38a9511c, type: 3}
-  rarity: 1
-  biteChance: 0.3
-  sweetSpotSize: 0.3
-  fishSpeed: 1.5
-  erraticness: 0.3
-  progressDrainRate: 0.2
-  sellPrice: 5
-  lastRarity: 1
+  rarity: 3
+  biteChance: 0.07
+  sweetSpotSize: 0.2
+  fishSpeed: 1.9
+  erraticness: 0.55
+  progressDrainRate: 0.25
+  sellPrice: 20
+  lastRarity: 3
   appearances: []
