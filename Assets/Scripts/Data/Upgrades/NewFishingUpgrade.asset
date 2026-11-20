@@ -13,10 +13,13 @@ MonoBehaviour:
   m_Name: NewFishingUpgrade
   m_EditorClassIdentifier: Assembly-CSharp::FishingUpgrade
   upgradeName: Upgrade
-  description: 
-  cost: 0
+  sprite: {fileID: 0}
+  description: Increases the daily timer by 15 seconds.
   biteChanceMultiplierBonus: 0
   sweetSpotSizeBonus: 0
   fishSpeedMultiplierBonus: 0
   reelStrengthBonus: 0
   progressFillMultiplierBonus: 0
+  sellPriceMultiplierBonus: 0
+  gameTimerBonus: 15
+  playerBaitBonus: 0

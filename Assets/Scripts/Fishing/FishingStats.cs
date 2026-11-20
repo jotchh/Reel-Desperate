@@ -14,6 +14,10 @@ public class FishingStats : MonoBehaviour
     [Header("Economy")]
     public float sellPriceMultiplier = 1f;
 
+    [Header("Daily")]
+    public float gameTimerBonus = 0f;
+    public float playerBaitBonus = 0f;
+
     public void ApplyUpgrade(FishingUpgrade upgrade)
     {
         if (upgrade == null)
@@ -25,5 +29,7 @@ public class FishingStats : MonoBehaviour
         reelStrength += upgrade.reelStrengthBonus;
         progressFillMultiplier += upgrade.progressFillMultiplierBonus;
         sellPriceMultiplier += upgrade.sellPriceMultiplierBonus;
+        gameTimerBonus += upgrade.gameTimerBonus;
+        playerBaitBonus += upgrade.playerBaitBonus;
     }
 }

@@ -43,4 +43,11 @@ public class FishingUpgrade : ScriptableObject
     [Header("Economy")]
     [Tooltip("Added to the sell price multiplier (0.10 = +10%).")]
     public float sellPriceMultiplierBonus;
+
+    [Header("Daily")]
+    [Tooltip("Added to the day timer.")]
+    public float gameTimerBonus;
+
+    [Tooltip("Added to the player bait per day counter.")]
+    public float playerBaitBonus;
 }

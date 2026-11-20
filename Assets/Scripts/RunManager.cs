@@ -128,8 +128,13 @@ private GameObject upgradeMenuInstance;
 
         // Reset day state.
         CurrentPhase = RunPhase.Day;
-        TimeRemaining = dayDuration;
-        RemainingBait = baitPerDay;
+        FishingStats stats = PlayerManager.Instance.GetComponent<FishingStats>();
+
+        float timerBonus = stats != null ? stats.gameTimerBonus : 0f;
+        float baitBonus = stats != null ? stats.playerBaitBonus : 0f;
+
+        TimeRemaining = dayDuration + timerBonus;
+        RemainingBait = baitPerDay + Mathf.RoundToInt(baitBonus);
 
         UpdateUI();
 

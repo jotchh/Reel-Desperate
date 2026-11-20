@@ -40,6 +40,9 @@ public class PlayerFishing : MonoBehaviour
     [Header("Reel Minigame")]
     [SerializeField] private FishingMinigame minigame;
 
+    [Header("Fishing Hotspots")]
+    [SerializeField] private FishingHotspot[] hotspots;
+
     public event System.Action<FishData> FishCaught;
 
     private PlayerManager playerManager;
@@ -221,17 +224,62 @@ public class PlayerFishing : MonoBehaviour
         }
     }
 
+    private FishingHotspot GetActiveHotspot()
+    {
+        if (hotspots == null)
+            return null;
+
+        FishingHotspot closestHotspot = null;
+        float closestDistance = float.MaxValue;
+
+        foreach (FishingHotspot hotspot in hotspots)
+        {
+            if (hotspot == null)
+                continue;
+
+            if (!hotspot.IsPlayerInRange(transform.position))
+                continue;
+
+            float distance = Vector2.Distance(
+                transform.position,
+                hotspot.transform.position
+            );
+
+            if (distance < closestDistance)
+            {
+                closestDistance = distance;
+                closestHotspot = hotspot;
+            }
+        }
+
+        return closestHotspot;
+    }
+
     private FishData RollForBite()
     {
         if (fishPool == null)
             return null;
 
+        FishingHotspot activeHotspot = GetActiveHotspot();
+
         List<FishData> bites = new List<FishData>();
 
         foreach (FishData fish in fishPool)
         {
-            if (fish != null &&
-                Random.value < fish.biteChance * stats.biteChanceMultiplier)
+            if (fish == null)
+                continue;
+
+            float chance = fish.biteChance * stats.biteChanceMultiplier;
+
+            // Apply hotspot rarity bonus
+            if (activeHotspot != null)
+            {
+                chance *= activeHotspot.GetMultiplier(fish.rarity);
+            }
+
+            chance = Mathf.Clamp01(chance);
+
+            if (Random.value < chance)
             {
                 bites.Add(fish);
             }

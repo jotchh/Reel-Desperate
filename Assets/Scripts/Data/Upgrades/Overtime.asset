@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 39ce2f9f760b44fe6ae44dc510e15093, type: 3}
+  m_Name: Overtime
+  m_EditorClassIdentifier: Assembly-CSharp::FishingUpgrade
+  upgradeName: Overtime
+  sprite: {fileID: -8100706709799297723, guid: 0c2378b45cca570469a2fd2bb8eafb10, type: 3}
+  description: Increases daily timer by 25 seconds.
+  biteChanceMultiplierBonus: 0
+  sweetSpotSizeBonus: 0
+  fishSpeedMultiplierBonus: 0
+  reelStrengthBonus: 0
+  progressFillMultiplierBonus: 0
+  sellPriceMultiplierBonus: 0
+  gameTimerBonus: 25
+  playerBaitBonus: 0
