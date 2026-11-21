@@ -1,8 +1,9 @@
-
+using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 using DG.Tweening;
+using TMPro;
 
 public class WizardInteraction : MonoBehaviour
 {
@@ -22,6 +23,54 @@ public class WizardInteraction : MonoBehaviour
     [SerializeField] private float bounceDuration = 0.12f;
     [SerializeField] private float bounceAmount = 0.1f;
     [SerializeField] private float waddleAngle = 8f;
+
+
+    [Header("Dialogue")]
+    [SerializeField] private GameObject dialoguePanel;
+    [SerializeField] private TMP_Text dialogueText;
+
+    [TextArea(2, 3)]
+    [SerializeField]
+    private string[] dialogueLines =
+    {
+    "Quit standing around! Those fish won't catch themselves!",
+    "Time is money, and you're wasting mine.",
+    "Chop chop! That quota isn't going to meet itself.",
+    "The ocean is right there, you know.",
+    "Less talking, more fishing!",
+    "Every second you spend here is a second you're not making me richer.",
+    "If you're done sightseeing, perhaps you could get back to work?"
+};
+
+
+    [Header("Empty Inventory Dialogue")]
+    [SerializeField]
+    private string[] emptyInventoryLines =
+{
+    "WOAH, WOAH, WOAH! You have NOTHING to sell?!",
+    "You come to MY shop... with EMPTY HANDS?!",
+    "What exactly am I supposed to buy? THE AIR?!",
+    "I am a BUSINESSMAN, not a charity!",
+    "You have NOTHING! NADA! ZERO! GET BACK TO FISHING!",
+    "I can't buy your hopes and dreams. BRING ME FISH!"
+};
+
+    [Header("Audio")]
+    [SerializeField] private AudioSource wizardAudio;
+    [SerializeField] private AudioClip menuSound;
+    [SerializeField] private AudioClip dialogueSound;
+
+
+    [Header("Dialogue Typing")]
+    [SerializeField] private float letterDelay = 0.04f;
+    [SerializeField] private int soundEveryLetters = 3;
+    [SerializeField] private float minVoicePitch = 0.8f;
+    [SerializeField] private float maxVoicePitch = 1.1f;
+
+    private Coroutine typingCoroutine;
+
+
+    private int lastDialogueIndex = -1;
 
     public static bool IsAnyMenuOpen { get; private set; }
 
@@ -70,6 +119,11 @@ public class WizardInteraction : MonoBehaviour
         if (talkPrompt != null)
         {
             talkPrompt.SetActive(false);
+        }
+
+        if (dialoguePanel != null)
+        {
+            dialoguePanel.SetActive(false);
         }
     }
 
@@ -161,7 +215,13 @@ public class WizardInteraction : MonoBehaviour
         menuOpen = true;
         IsAnyMenuOpen = true;
 
+        if (RunManager.Instance != null)
+        {
+            RunManager.Instance.PauseTimer("Wizard");
+        }
+
         Bounce();
+        PlaySound(menuSound);
 
         wizardMenu.SetActive(true);
         BackToMain();
@@ -172,21 +232,33 @@ public class WizardInteraction : MonoBehaviour
         }
     }
 
-    public void OpenSellPanel()
+    
+public void OpenSellPanel()
+{
+    if (!menuOpen)
     {
-        if (!menuOpen)
-        {
-            return;
-        }
-
-        mainPanel.SetActive(false);
-        sellPanel.SetActive(true);
-
-        if (fishShop != null)
-        {
-            fishShop.RefreshSellPanel();
-        }
+        return;
     }
+
+    StopDialogueTyping();
+
+    mainPanel.SetActive(false);
+    sellPanel.SetActive(true);
+
+    if (dialoguePanel != null)
+    {
+        dialoguePanel.SetActive(false);
+    }
+
+    if (fishShop != null)
+    {
+        fishShop.RefreshSellPanel();
+    }
+
+    PlaySound(menuSound);
+}
+
+
 
     public void BackToMain()
     {
@@ -195,9 +267,70 @@ public class WizardInteraction : MonoBehaviour
             return;
         }
 
+        StopDialogueTyping();
+
         mainPanel.SetActive(true);
         sellPanel.SetActive(false);
+
+        if (dialoguePanel != null)
+        {
+            dialoguePanel.SetActive(false);
+        }
+
+        PlaySound(menuSound);
     }
+
+
+    public void OpenDialogue()
+    {
+        if (!menuOpen || dialoguePanel == null || dialogueText == null)
+        {
+            Debug.LogWarning("Wizard: Dialogue UI is missing.");
+            return;
+        }
+
+        mainPanel.SetActive(false);
+        sellPanel.SetActive(false);
+        dialoguePanel.SetActive(true);
+
+        NextDialogue();
+    }
+
+    public void NextDialogue()
+    {
+        if (!menuOpen || dialogueText == null ||
+            dialogueLines == null || dialogueLines.Length == 0)
+        {
+            return;
+        }
+
+        int index = Random.Range(0, dialogueLines.Length);
+
+        if (dialogueLines.Length > 1 && index == lastDialogueIndex)
+        {
+            index = (index + 1) % dialogueLines.Length;
+        }
+
+        lastDialogueIndex = index;
+
+        if (typingCoroutine != null)
+        {
+            StopCoroutine(typingCoroutine);
+        }
+
+        typingCoroutine = StartCoroutine(
+            TypeDialogue(dialogueLines[index])
+        );
+    }
+
+    private void PlaySound(AudioClip clip)
+    {
+        if (wizardAudio != null && clip != null)
+        {
+            wizardAudio.PlayOneShot(clip);
+        }
+    }
+
 
     public void OpenUpgradesScene()
     {
@@ -242,6 +375,11 @@ public class WizardInteraction : MonoBehaviour
         menuOpen = false;
         IsAnyMenuOpen = false;
 
+        if (RunManager.Instance != null)
+        {
+            RunManager.Instance.ResumeTimer("Wizard");
+        }
+
         if (wizardMenu != null)
         {
             wizardMenu.SetActive(false);
@@ -259,6 +397,8 @@ public class WizardInteraction : MonoBehaviour
 
         playerMovement = null;
         playerFishing = null;
+
+        StopDialogueTyping();
     }
 
     private void Bounce()
@@ -283,7 +423,7 @@ public class WizardInteraction : MonoBehaviour
             originalScale.z
         );
 
-        bounceTween = DOTween.Sequence();
+        bounceTween = DOTween.Sequence().SetUpdate(true);
 
         bounceTween.Append(wizardVisual.DOScale(squash, bounceDuration));
 
@@ -335,6 +475,8 @@ public class WizardInteraction : MonoBehaviour
         {
             talkPrompt.SetActive(false);
         }
+
+        StopDialogueTyping();
     }
 
     private void OnDestroy()
@@ -344,4 +486,89 @@ public class WizardInteraction : MonoBehaviour
             input.Dispose();
         }
     }
+
+    private void StopDialogueTyping()
+    {
+        if (typingCoroutine != null)
+        {
+            StopCoroutine(typingCoroutine);
+            typingCoroutine = null;
+        }
+
+        if (wizardAudio != null)
+        {
+            wizardAudio.pitch = 1f;
+        }
+    }
+    private IEnumerator TypeDialogue(string message)
+    {
+        dialogueText.text = "";
+
+        int letterCount = 0;
+
+        for (int i = 0; i < message.Length; i++)
+        {
+            dialogueText.text += message[i];
+
+            if (!char.IsWhiteSpace(message[i]) &&
+                !char.IsPunctuation(message[i]))
+            {
+                letterCount++;
+
+                if (letterCount % soundEveryLetters == 0)
+                {
+                    if (wizardAudio != null && dialogueSound != null)
+                    {
+                        wizardAudio.pitch = Random.Range(
+                            minVoicePitch,
+                            maxVoicePitch
+                        );
+
+                        wizardAudio.PlayOneShot(dialogueSound);
+                    }
+                }
+            }
+
+            yield return new WaitForSecondsRealtime(letterDelay);
+        }
+
+        if (wizardAudio != null)
+        {
+            wizardAudio.pitch = 1f;
+        }
+
+        typingCoroutine = null;
+    }
+
+
+    public void ShowDialogue(string message)
+    {
+        if (!menuOpen || dialoguePanel == null || dialogueText == null)
+        {
+            Debug.LogWarning("Wizard: Dialogue UI is missing.");
+            return;
+        }
+
+        StopDialogueTyping();
+
+        mainPanel.SetActive(false);
+        sellPanel.SetActive(false);
+        dialoguePanel.SetActive(true);
+
+        typingCoroutine = StartCoroutine(TypeDialogue(message));
+    }
+
+    public void ShowEmptySaleDialogue()
+    {
+        if (emptyInventoryLines == null || emptyInventoryLines.Length == 0)
+        {
+            return;
+        }
+
+        int index = Random.Range(0, emptyInventoryLines.Length);
+
+        ShowDialogue(emptyInventoryLines[index]);
+    }
+
+
 }

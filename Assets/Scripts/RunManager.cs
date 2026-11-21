@@ -1,5 +1,6 @@
 
 using System;
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -7,6 +8,23 @@ using UnityEngine.UI;
 public class RunManager : MonoBehaviour
 {
     public static RunManager Instance { get; private set; }
+
+    private HashSet<string> timerPauseReasons = new HashSet<string>();
+
+    public bool IsTimerPaused
+    {
+        get { return timerPauseReasons.Count > 0; }
+    }
+
+    public void PauseTimer(string reason)
+    {
+        timerPauseReasons.Add(reason);
+    }
+
+    public void ResumeTimer(string reason)
+    {
+        timerPauseReasons.Remove(reason);
+    }
 
     public enum RunPhase
     {
@@ -53,7 +71,7 @@ private GameObject upgradeMenuInstance;
     {
         get
         {
-            if (!IsDayActive || EconomyManager.Instance == null)
+            if (!IsDayActive || IsTimerPaused || EconomyManager.Instance == null)
                 return false;
 
             EconomyManager economy = EconomyManager.Instance;
@@ -100,12 +118,15 @@ private GameObject upgradeMenuInstance;
         if (!IsDayActive)
             return;
 
-        TimeRemaining -= Time.deltaTime;
-
-        if (TimeRemaining <= 0f)
+        if (!IsTimerPaused)
         {
-            TimeRemaining = 0f;
-            EndDay();
+            TimeRemaining -= Time.deltaTime;
+
+            if (TimeRemaining <= 0f)
+            {
+                TimeRemaining = 0f;
+                EndDay();
+            }
         }
 
         UpdateUI();

@@ -27,6 +27,10 @@ public class Inventory : MonoBehaviour
     [SerializeField] private GameObject fishRowPrefab;
     [SerializeField] private TMP_Text inventoryValueText;
 
+    [Header("Audio")]
+    [SerializeField] private AudioSource menuAudio;
+    [SerializeField] private AudioClip menuSound;
+
     private static List<CaughtFish> savedFish = new List<CaughtFish>();
 
     private PlayerFishing playerFishing;
@@ -344,9 +348,15 @@ public class Inventory : MonoBehaviour
 
         isOpen = true;
 
+        if (RunManager.Instance != null)
+        {
+            RunManager.Instance.PauseTimer("Inventory");
+        }
+
         RefreshInventory();
 
         inventoryPanel.SetActive(true);
+        PlayMenuSound();
     }
 
     public void CloseInventory()
@@ -358,9 +368,19 @@ public class Inventory : MonoBehaviour
 
         isOpen = false;
 
+        if (RunManager.Instance != null)
+        {
+            RunManager.Instance.ResumeTimer("Inventory");
+        }
+
         if (inventoryPanel != null)
         {
             inventoryPanel.SetActive(false);
+        }
+
+        if (isActiveAndEnabled)
+        {
+            PlayMenuSound();
         }
 
         if (playerMovement != null)
@@ -528,6 +548,14 @@ public class Inventory : MonoBehaviour
         Debug.Log("Sold all fish for $" + total);
 
         return total;
+    }
+
+    private void PlayMenuSound()
+    {
+        if (menuAudio != null && menuSound != null)
+        {
+            menuAudio.PlayOneShot(menuSound);
+        }
     }
 
     [ContextMenu("TEST - Add Fish")]

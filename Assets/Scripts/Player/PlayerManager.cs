@@ -23,6 +23,10 @@ public class PlayerManager : MonoBehaviour
     [SerializeField] private Sprite[] explosionFrames;
     [SerializeField] private float frameDuration = 0.08f;
 
+    [Header("Explosion Audio")]
+    [SerializeField] private AudioSource explosionAudio;
+    [SerializeField] private AudioClip explosionSound;
+
     private PlayerMovement movement;
     private PlayerFishing fishing;
     private PlayerAnimation playerAnimation;
@@ -59,13 +63,21 @@ public class PlayerManager : MonoBehaviour
             movement.StopMovement();
         }
 
+
         if (newState == PlayerState.Dead)
         {
             Debug.Log("Player exploded!");
 
             fishing.EndFishingForDay();
+
+            if (explosionAudio != null && explosionSound != null)
+            {
+                explosionAudio.PlayOneShot(explosionSound);
+            }
+
             PlayExplosion();
         }
+
     }
 
     private void PlayExplosion()

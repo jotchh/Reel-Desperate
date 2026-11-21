@@ -10,6 +10,11 @@ public class FishShop : MonoBehaviour
     [SerializeField] private GameObject fishRowPrefab;
     [SerializeField] private TMP_Text totalSellText;
 
+    [Header("Audio")]
+    [SerializeField] private AudioSource shopAudio;
+    [SerializeField] private AudioClip sellSound;
+
+
     public void RefreshSellPanel()
     {
         if (inventory == null && PlayerManager.Instance != null)
@@ -64,6 +69,7 @@ public class FishShop : MonoBehaviour
         }
     }
 
+
     public void SellAll()
     {
         if (inventory == null && PlayerManager.Instance != null)
@@ -76,11 +82,29 @@ public class FishShop : MonoBehaviour
             return;
         }
 
+        if (inventory.Fish.Count == 0)
+        {
+            WizardInteraction wizard = GetComponent<WizardInteraction>();
+
+            if (wizard != null)
+            {
+                wizard.ShowEmptySaleDialogue();
+            }
+
+            return;
+        }
+
         int total = inventory.SellAllFish();
 
         if (total > 0)
         {
             Debug.Log("Sold fish for $" + total);
+
+            if (shopAudio != null && sellSound != null)
+            {
+                shopAudio.pitch = 1f;
+                shopAudio.PlayOneShot(sellSound);
+            }
         }
 
         RefreshSellPanel();
