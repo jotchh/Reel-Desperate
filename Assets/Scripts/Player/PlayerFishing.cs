@@ -43,6 +43,20 @@ public class PlayerFishing : MonoBehaviour
     [Header("Fishing Hotspots")]
     [SerializeField] private FishingHotspot[] hotspots;
 
+    [Header("Fishing Audio")]
+    [SerializeField] private AudioSource fishingAudio;
+    [SerializeField] private AudioSource reelingAudio;
+
+    [SerializeField] private AudioClip castSound;
+    [SerializeField] private AudioClip splashSound;
+    [SerializeField] private AudioClip biteSound;
+    [SerializeField] private AudioClip fishEscapedSound;
+
+    [SerializeField] private float splashDelay = 0.3f;
+
+    private Coroutine splashRoutine;
+
+
     public event System.Action<FishData> FishCaught;
 
     private PlayerManager playerManager;
@@ -81,6 +95,38 @@ public class PlayerFishing : MonoBehaviour
         HideAllRods();
         HideBiteIndicator();
     }
+
+
+    private void Update()
+    {
+        if (reelingAudio == null)
+        {
+            return;
+        }
+
+        bool isReeling =
+            phase == FishingPhase.Reeling &&
+            minigame != null &&
+            minigame.IsRunning &&
+            reelAction != null &&
+            reelAction.IsPressed();
+
+        if (isReeling)
+        {
+            if (!reelingAudio.isPlaying)
+            {
+                reelingAudio.Play();
+            }
+        }
+        else
+        {
+            if (reelingAudio.isPlaying)
+            {
+                reelingAudio.Stop();
+            }
+        }
+    }
+
 
     private void OnEnable()
     {
@@ -160,11 +206,26 @@ public class PlayerFishing : MonoBehaviour
         ShowRod(direction);
 
         phase = FishingPhase.Waiting;
+
+        PlayFishingSound(castSound);
+        splashRoutine = StartCoroutine(PlaySplashAfterDelay());
+
         biteRoutine = StartCoroutine(BiteLoop());
     }
 
     private void StopFishing()
     {
+        if (splashRoutine != null)
+        {
+            StopCoroutine(splashRoutine);
+            splashRoutine = null;
+        }
+
+        if (reelingAudio != null)
+        {
+            reelingAudio.Stop();
+        }
+
         if (biteRoutine != null)
         {
             StopCoroutine(biteRoutine);
@@ -211,12 +272,16 @@ public class PlayerFishing : MonoBehaviour
             phase = FishingPhase.Bite;
             ShowBiteIndicator();
 
+            PlayFishingSound(biteSound);
+
             yield return new WaitForSeconds(reactionWindow);
 
             // Player didn't click in time.
             Debug.Log(
                 $"The {fish.fishName} got away before you could hook it."
             );
+
+            PlayFishingSound(fishEscapedSound);
 
             hookedFish = null;
             phase = FishingPhase.Waiting;
@@ -345,6 +410,8 @@ public class PlayerFishing : MonoBehaviour
         else
         {
             Debug.Log($"The {fish?.fishName ?? "fish"} escaped!");
+            PlayFishingSound(fishEscapedSound);
+
         }
 
         StopFishing();
@@ -456,4 +523,26 @@ public class PlayerFishing : MonoBehaviour
 
         return false;
     }
+
+
+    private void PlayFishingSound(AudioClip clip)
+    {
+        if (fishingAudio != null && clip != null)
+        {
+            fishingAudio.PlayOneShot(clip);
+        }
+    }
+
+    private IEnumerator PlaySplashAfterDelay()
+    {
+        yield return new WaitForSeconds(splashDelay);
+
+        if (phase == FishingPhase.Waiting)
+        {
+            PlayFishingSound(splashSound);
+        }
+
+        splashRoutine = null;
+    }
+
 }
